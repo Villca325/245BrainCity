@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
-import '../models/question_model.dart';
 
 class CityController extends ChangeNotifier {
   int totalScore = 0;
-  // implementes logica frankocok
+
+  CityController();
+
+  int get puntos => totalScore;
+
+  void agregarPuntos(int cantidad) {
+    totalScore += cantidad;
+    notifyListeners();
+  }
+
+  void resetearPuntos(){
+    totalScore = 0;
+    notifyListeners();
+  }
 }

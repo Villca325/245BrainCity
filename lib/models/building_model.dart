@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'question_model.dart'; // Importamos el modelo de pregunta que ya tenías
+import 'question_model.dart';
 
 class Building {
   final String id;

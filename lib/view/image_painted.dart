@@ -1,10 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-import '../data/quiz_data.dart'; // Tus datos
-import '../models/building_model.dart'; // Tu modelo
+import '../data/quiz_data.dart';
+import '../models/building_model.dart';
 import 'quiz_view.dart';
 
 class ImagePainted extends StatefulWidget {
@@ -15,7 +14,35 @@ class ImagePainted extends StatefulWidget {
 }
 
 class _ImagePaintedState extends State<ImagePainted> {
-  var jsonData; //#JSON es clave
+  var jsonData;
+  final double anchoImagen = 832;
+  final double altoImagen = 1248;
+
+  final Map<int, List<Offset>> polygons = {};
+  final Map<int, bool> edificiosDesbloqueados = {
+    1: false,
+    2: false,
+    3: false,
+    4: false,
+    5: true, //Gimnasio desbloqueado inicio
+  };
+
+  final Map<int, Building> areaBuilding = {
+    1: QuizData.banco,
+    2: QuizData.laboratorio,
+    3: QuizData.biblioteca,
+    4: QuizData.museo,
+    5: QuizData.gimnasio,
+  };
+
+  Set<int> tappedAreas = {5};
+
+  @override
+  void initState() {
+    super.initState();
+    loadJsonAsset();
+  }
+
   Future<void> loadJsonAsset() async {
     final String jsonString = await rootBundle.loadString(
       'assets/json/coordenadas.json',
@@ -23,16 +50,39 @@ class _ImagePaintedState extends State<ImagePainted> {
     var data = jsonDecode(jsonString);
     setState(() {
       jsonData = data;
+      // Llenar polígonos
+      for (int i = 1; i <= 5; i++) {
+        polygons[i] = [];
+        llenarPuntos(i.toString(), polygons[i]!, 1, 1); // se ajusta en build
+      }
     });
   }
 
-  final double anchoImagen = 832;
-  final double altoImagen = 1248;
-  Set<int> tappedAreas = {1, 2, 3, 4, 5};
-  @override
-  void initState() {
-    super.initState();
-    loadJsonAsset();
+  void _navegar(BuildContext context, int idArea, Building edificio) async {
+    if (!edificiosDesbloqueados[idArea]!) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Este edificio está bloqueado. ¡Debes desbloquearlo primero!"),
+        ),
+      );
+      return;
+    }
+
+    final puntosEdificio = await Navigator.push<int>(
+      context,
+      MaterialPageRoute(builder: (_) => QuizView(building: edificio)),
+    );
+
+    if (puntosEdificio != null && puntosEdificio >= 1000) {
+      // Desbloquea el siguiente edificio en orden 5->4->3->2->1
+      setState(() {
+        int siguiente = idArea - 1;
+        if (siguiente >= 1) {
+          edificiosDesbloqueados[siguiente] = true;
+          tappedAreas.add(siguiente);
+        }
+      });
+    }
   }
 
   @override
@@ -45,37 +95,19 @@ class _ImagePaintedState extends State<ImagePainted> {
         final scalaX = anchoTotal / anchoImagen;
         final scalaY = altoTotal / altoImagen;
 
-        List<Offset> area1 = [];
-        llenarPuntos("1", area1, scalaX, scalaY);
-        List<Offset> area2 = [];
-        llenarPuntos("2", area2, scalaX, scalaY);
-        List<Offset> area3 = [];
-        llenarPuntos("3", area3, scalaX, scalaY);
-        List<Offset> area4 = [];
-        llenarPuntos("4", area4, scalaX, scalaY);
-        List<Offset> area5 = [];
-        llenarPuntos("5", area5, scalaX, scalaY);
+        polygons.forEach((id, polygon) {
+          polygon.clear();
+          llenarPuntos(id.toString(), polygon, scalaX, scalaY);
+        });
+
         return GestureDetector(
           onTapDown: (details) {
             final pos = details.localPosition;
-
-            // --- CAMBIA ESTO ---
-            if (_insidePolygon(pos, area1)) {
-              _navegar(context, 1, QuizData.banco); // Área 1 -> Banco
-            } else if (_insidePolygon(pos, area2)) {
-              _navegar(
-                context,
-                2,
-                QuizData.laboratorio,
-              ); // Área 2 -> Laboratorio
-            } else if (_insidePolygon(pos, area3)) {
-              _navegar(context, 3, QuizData.biblioteca); // Área 3 -> Biblioteca
-            } else if (_insidePolygon(pos, area4)) {
-              _navegar(context, 4, QuizData.museo); // Área 4 -> Museo
-            } else if (_insidePolygon(pos, area5)) {
-              _navegar(context, 5, QuizData.gimnasio); // Área 5 -> Gimnasio
-            }
-            // -------------------
+            polygons.forEach((idArea, polygon) {
+              if (_insidePolygon(pos, polygon)) {
+                _navegar(context, idArea, areaBuilding[idArea]!);
+              }
+            });
           },
           child: Stack(
             children: [
@@ -85,12 +117,11 @@ class _ImagePaintedState extends State<ImagePainted> {
                 height: altoTotal,
                 fit: BoxFit.fill,
               ),
-
               CustomPaint(
                 size: Size(anchoTotal, altoTotal),
                 painter: PolygonPainter(
-                  polygons: [area1, area2, area3, area4, area5],
-                  filtro: tappedAreas,
+                  polygons: polygons,
+                  desbloqueados: edificiosDesbloqueados,
                 ),
               ),
             ],
@@ -100,12 +131,8 @@ class _ImagePaintedState extends State<ImagePainted> {
     );
   }
 
-  void llenarPuntos(
-    String numeroArea,
-    List<Offset> area,
-    double scalaX,
-    double scalaY,
-  ) {
+  void llenarPuntos(String numeroArea, List<Offset> area, double scalaX, double scalaY) {
+    if (jsonData == null) return;
     for (int i = 0; i + 1 < jsonData[numeroArea].length; i += 2) {
       area.add(
         Offset(
@@ -116,50 +143,29 @@ class _ImagePaintedState extends State<ImagePainted> {
     }
   }
 
-  void alternarEstado(Set<int> tappedAreas, int i) {
-    if (tappedAreas.contains(i)) {
-      tappedAreas.remove(i);
-    } else {
-      tappedAreas.add(i);
-    }
-  }
-
   bool _insidePolygon(Offset point, List<Offset> polygon) {
     final path = Path()..addPolygon(polygon, true);
     return path.contains(point);
   }
-
-  //funcion para navegacion
-  void _navegar(BuildContext context, int idArea, Building edificio) {
-    setState(() {
-      alternarEstado(tappedAreas, idArea);
-    });
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => QuizView(building: edificio)),
-    );
-  }
 }
 
 class PolygonPainter extends CustomPainter {
-  final List<List<Offset>> polygons;
-  final Set<int> filtro;
+  final Map<int, List<Offset>> polygons;
+  final Map<int, bool> desbloqueados;
 
-  PolygonPainter({required this.polygons, required this.filtro});
+  PolygonPainter({required this.polygons, required this.desbloqueados});
 
   @override
   void paint(Canvas canvas, Size size) {
     Paint fillPaint = Paint()..style = PaintingStyle.fill;
 
-    for (int i = 0; i < polygons.length; i++) {
-      final path = Path()..addPolygon(polygons[i], true);
-
-      if (filtro.contains(i + 1)) {
+    polygons.forEach((idArea, polygon) {
+      final path = Path()..addPolygon(polygon, true);
+      if (!desbloqueados[idArea]!) {
         fillPaint.color = Colors.grey.withAlpha(175);
         canvas.drawPath(path, fillPaint);
       }
-    }
+    });
   }
 
   @override

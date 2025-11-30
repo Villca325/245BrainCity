@@ -1,6 +1,18 @@
 import 'package:flutter/material.dart';
 import '../models/building_model.dart';
-import '../models/question_model.dart'; // Asegúrate que este archivo tiene la clase Pregunta
+import '../controllers/quiz_controller.dart';
+
+class CityController {
+  int totalScore = 0;
+
+  void agregarPuntos(int cantidad) {
+    totalScore += cantidad;
+  }
+
+  void resetearPuntos() {
+    totalScore = 0;
+  }
+}
 
 class QuizView extends StatefulWidget {
   final Building building;
@@ -12,11 +24,80 @@ class QuizView extends StatefulWidget {
 }
 
 class _QuizViewState extends State<QuizView> {
-  int currentQuestionIndex = 0;
+  late QuizController quizController;
+  late CityController cityController;
+
+  @override
+  void initState() {
+    super.initState();
+    quizController = QuizController(building: widget.building);
+    cityController = CityController();
+  }
+
+  void _responder(int indice) {
+    final correcta = quizController.responder(indice);
+
+    if (correcta) {
+      cityController.agregarPuntos(100);
+    }
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(correcta ? "¡Correcto!" : "Incorrecto"),
+        content: Text(correcta ? "¡Ganaste 10 puntos!" : "Sigue intentando."),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, quizController.puntos);
+
+              quizController.siguientePregunta();
+
+              if (quizController.quizTerminado) {
+                Future.delayed(Duration.zero, () {
+                  _mostrarFinQuiz();
+                });
+              } else {
+                setState(() {});
+              }
+            },
+            child: const Text("Continuar"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _mostrarFinQuiz() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        title: const Text("Fin del Quiz"),
+        content: Text(
+            "Tu puntuación en este edificio: ${quizController.puntos}\nPuntuación global: ${cityController.totalScore}"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, quizController.puntos);
+              Navigator.pop(context, quizController.puntos);
+            },
+            child: const Text("Volver"),
+          )
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final Pregunta pregunta = widget.building.questions[currentQuestionIndex];
+    final pregunta = quizController.preguntaActual;
+
+    if (pregunta == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       backgroundColor: widget.building.color,
@@ -31,15 +112,14 @@ class _QuizViewState extends State<QuizView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Center(
+            Center(
               child: Text(
-                "Puntos: 0",
-                style: TextStyle(fontSize: 20, color: Colors.white),
+                "Puntos: ${quizController.puntos}",
+                style: const TextStyle(fontSize: 22, color: Colors.white),
               ),
             ),
             const SizedBox(height: 20),
 
-            // PREGUNTA
             Container(
               padding: const EdgeInsets.all(20),
               color: Colors.white,
@@ -63,11 +143,7 @@ class _QuizViewState extends State<QuizView> {
                         backgroundColor: Colors.white,
                         foregroundColor: Colors.black,
                       ),
-                      onPressed: () {
-                        print("Seleccionado: ${pregunta.opciones[index]}");
-
-                        print("Correcto: ${pregunta.indiceRespuestaCorrecta}");
-                      },
+                      onPressed: () => _responder(index),
                       child: Text(pregunta.opciones[index]),
                     ),
                   );
