@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 enum BuildingType { banco, laboratorio, museo, biblioteca, gimnasio }
 
 class Pregunta {

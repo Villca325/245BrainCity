@@ -1,18 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/building_model.dart';
 import '../controllers/quiz_controller.dart';
-
-class CityController {
-  int totalScore = 0;
-
-  void agregarPuntos(int cantidad) {
-    totalScore += cantidad;
-  }
-
-  void resetearPuntos() {
-    totalScore = 0;
-  }
-}
+import '../controllers/city_controller.dart';
 
 class QuizView extends StatefulWidget {
   final Building building;
@@ -25,17 +15,15 @@ class QuizView extends StatefulWidget {
 
 class _QuizViewState extends State<QuizView> {
   late QuizController quizController;
-  late CityController cityController;
 
   @override
   void initState() {
     super.initState();
     quizController = QuizController(building: widget.building);
-    cityController = CityController();
   }
 
-  void _responder(int indice) {
-    final correcta = quizController.responder(indice);
+  void _responder(BuildContext context, CityController cityController) {
+    final correcta = quizController.responder();
 
     if (correcta) {
       cityController.agregarPuntos(100);
@@ -49,13 +37,13 @@ class _QuizViewState extends State<QuizView> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context, quizController.puntos);
+              Navigator.pop(context);
 
               quizController.siguientePregunta();
 
               if (quizController.quizTerminado) {
                 Future.delayed(Duration.zero, () {
-                  _mostrarFinQuiz();
+                  _mostrarFinQuiz(context, cityController);
                 });
               } else {
                 setState(() {});
@@ -68,7 +56,10 @@ class _QuizViewState extends State<QuizView> {
     );
   }
 
-  void _mostrarFinQuiz() {
+  void _mostrarFinQuiz(BuildContext context, CityController cityController) {
+    if (quizController.puntos >= 1000) {
+
+    }
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -91,6 +82,7 @@ class _QuizViewState extends State<QuizView> {
 
   @override
   Widget build(BuildContext context) {
+    final cityController = Provider.of<CityController>(context, listen: false);
     final pregunta = quizController.preguntaActual;
 
     if (pregunta == null) {
@@ -143,7 +135,10 @@ class _QuizViewState extends State<QuizView> {
                         backgroundColor: Colors.white,
                         foregroundColor: Colors.black,
                       ),
-                      onPressed: () => _responder(index),
+                      onPressed: () {
+                        quizController.setRespuestaSeleccionada(index);
+                        _responder(context, cityController);
+                      },
                       child: Text(pregunta.opciones[index]),
                     ),
                   );

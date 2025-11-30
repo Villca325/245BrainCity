@@ -9,9 +9,14 @@ class QuizController extends ChangeNotifier {
   List<int> usados = [];
   int puntos = 0;
   Pregunta? preguntaActual;
+  int? _respuestaSeleccionada;
 
   QuizController({required this.building}) {
     _cargarNuevaPregunta();
+  }
+
+  void setRespuestaSeleccionada(int indice) {
+    _respuestaSeleccionada = indice;
   }
 
   void _cargarNuevaPregunta() {
@@ -35,15 +40,16 @@ class QuizController extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool responder(int indiceSeleccionado) {
-    if (preguntaActual == null) return false;
+  bool responder() {
+    if (preguntaActual == null || _respuestaSeleccionada == null) return false;
 
-    bool correcta = indiceSeleccionado == preguntaActual!.indiceRespuestaCorrecta;
+    bool correcta = _respuestaSeleccionada == preguntaActual!.indiceRespuestaCorrecta;
 
     if (correcta) {
       puntos += 100;
     }
 
+    _respuestaSeleccionada = null;
     return correcta;
   }
 

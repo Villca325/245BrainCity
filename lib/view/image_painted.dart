@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:provider/provider.dart';
 
 import '../data/quiz_data.dart';
 import '../models/building_model.dart';
 import 'quiz_view.dart';
+import '../controllers/city_controller.dart';
 
 class ImagePainted extends StatefulWidget {
   const ImagePainted({super.key});
@@ -19,13 +21,6 @@ class _ImagePaintedState extends State<ImagePainted> {
   final double altoImagen = 1248;
 
   final Map<int, List<Offset>> polygons = {};
-  final Map<int, bool> edificiosDesbloqueados = {
-    1: false,
-    2: false,
-    3: false,
-    4: false,
-    5: true, //Gimnasio desbloqueado inicio
-  };
 
   final Map<int, Building> areaBuilding = {
     1: QuizData.banco,
@@ -50,16 +45,17 @@ class _ImagePaintedState extends State<ImagePainted> {
     var data = jsonDecode(jsonString);
     setState(() {
       jsonData = data;
-      // Llenar polígonos
       for (int i = 1; i <= 5; i++) {
         polygons[i] = [];
-        llenarPuntos(i.toString(), polygons[i]!, 1, 1); // se ajusta en build
+        llenarPuntos(i.toString(), polygons[i]!, 1, 1);
       }
     });
   }
 
   void _navegar(BuildContext context, int idArea, Building edificio) async {
-    if (!edificiosDesbloqueados[idArea]!) {
+    final cityController = Provider.of<CityController>(context, listen: false);
+
+    if (!cityController.estaDesbloqueado(idArea)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Este edificio está bloqueado. ¡Debes desbloquearlo primero!"),
@@ -74,19 +70,14 @@ class _ImagePaintedState extends State<ImagePainted> {
     );
 
     if (puntosEdificio != null && puntosEdificio >= 1000) {
-      // Desbloquea el siguiente edificio en orden 5->4->3->2->1
-      setState(() {
-        int siguiente = idArea - 1;
-        if (siguiente >= 1) {
-          edificiosDesbloqueados[siguiente] = true;
-          tappedAreas.add(siguiente);
-        }
-      });
+      cityController.desbloquearSiguiente(idArea);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final cityController = Provider.of<CityController>(context); // <-- Escuchar cambios
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final anchoTotal = constraints.maxWidth;
@@ -121,7 +112,7 @@ class _ImagePaintedState extends State<ImagePainted> {
                 size: Size(anchoTotal, altoTotal),
                 painter: PolygonPainter(
                   polygons: polygons,
-                  desbloqueados: edificiosDesbloqueados,
+                  desbloqueados: cityController.estadoDesbloqueo,
                 ),
               ),
             ],
