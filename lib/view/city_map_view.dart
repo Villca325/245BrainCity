@@ -1,28 +1,20 @@
+import 'package:braincity/view/image_painted.dart';
 import 'package:flutter/material.dart';
+import 'widgets/boton_atras.dart';
 
-//Equipo Docmasita: todas las views menos el de quiz
-class CityMapView extends StatelessWidget {
-  const CityMapView({super.key});
+class PaginaMapa extends StatelessWidget {
+  const PaginaMapa({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Mapa de Brain City"),
-        actions: [IconButton(icon: const Icon(Icons.info), onPressed: () {})],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Text(
-              "mapa de la ciudad",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            Text("hola"),
-          ],
-        ),
+      body: Stack(
+        // <--- Usas Stack
+        children: [
+          Container(color: const Color(0xFF1A1025)),
+          ImagePainted(),
+          const BotonAtras(),
+        ],
       ),
     );
   }

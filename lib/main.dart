@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'view/menu_view.dart';
+import 'view/developers_view.dart';
+import 'view/rules_view.dart';
 import 'view/city_map_view.dart';
 
 void main() {
@@ -13,8 +16,13 @@ class BrainCityApp extends StatelessWidget {
     return MaterialApp(
       title: 'Brain City',
       debugShowCheckedModeBanner: false,
-
-      home: const CityMapView(),
+      initialRoute: '/',
+      routes: {
+        '/': (_) => const PaginaMenu(),
+        '/desarrolladores': (_) => const PaginaDesarrolladores(),
+        '/reglas': (_) => const PaginaReglas(),
+        '/mapa': (_) => const PaginaMapa(),
+      },
     );
   }
 }
