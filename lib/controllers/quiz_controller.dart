@@ -1,61 +1,59 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import '../models/question_model.dart';
 import '../models/building_model.dart';
+import '../models/question_model.dart';
 
 class QuizController extends ChangeNotifier {
   final Building building;
-  List<int> usados = [];
-  int puntos = 0;
-  Pregunta? preguntaActual;
+  late List<Pregunta> _preguntas;
+  int _indicePreguntaActual = 0;
+  int _puntos = 0;
+  bool _yaGano = false;
   int? _respuestaSeleccionada;
 
   QuizController({required this.building}) {
-    _cargarNuevaPregunta();
+    _preguntas = List.from(building.questions);
   }
 
-  void setRespuestaSeleccionada(int indice) {
-    _respuestaSeleccionada = indice;
-  }
-
-  void _cargarNuevaPregunta() {
-    final preguntas = building.questions;
-
-    if (usados.length == preguntas.length) {
-      preguntaActual = null;
-      notifyListeners();
-      return;
+  Pregunta? get preguntaActual {
+    if (_indicePreguntaActual < _preguntas.length) {
+      return _preguntas[_indicePreguntaActual];
     }
+    return null;
+  }
 
-    final random = Random();
-    int nuevoIndex;
+  int get puntos => _puntos;
 
-    do {
-      nuevoIndex = random.nextInt(preguntas.length);
-    } while (usados.contains(nuevoIndex));
+  bool get quizTerminado => _indicePreguntaActual >= _preguntas.length;
 
-    usados.add(nuevoIndex);
-    preguntaActual = preguntas[nuevoIndex];
+  bool get yaGano => _yaGano;
+
+  void marcarComoGanado() {
+    _yaGano = true;
     notifyListeners();
   }
 
+  void setRespuestaSeleccionada(int index) {
+    _respuestaSeleccionada = index;
+  }
+
   bool responder() {
-    if (preguntaActual == null || _respuestaSeleccionada == null) return false;
-
-    bool correcta = _respuestaSeleccionada == preguntaActual!.indiceRespuestaCorrecta;
-
-    if (correcta) {
-      puntos += 100;
+    if (_preguntaCorrecta() && _respuestaSeleccionada != null) {
+      _puntos += 100;
+      notifyListeners();
+      return true;
     }
-
-    _respuestaSeleccionada = null;
-    return correcta;
+    return false;
   }
 
   void siguientePregunta() {
-    _cargarNuevaPregunta();
+    _indicePreguntaActual++;
+    _respuestaSeleccionada = null;
+    notifyListeners();
   }
 
-  bool get quizTerminado => preguntaActual == null;
+  bool _preguntaCorrecta() {
+    final pregunta = preguntaActual;
+    if (pregunta == null || _respuestaSeleccionada == null) return false;
+    return pregunta.indiceRespuestaCorrecta == _respuestaSeleccionada;
+  }
 }
