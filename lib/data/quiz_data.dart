@@ -571,7 +571,11 @@ class QuizData {
       Pregunta(
           id: 'g1',
           textoPregunta:
+<<<<<<< HEAD
               "Padre de Ana tiene 5 hijas: Lala, Lele, Lili, Lolo y...",
+=======
+          "Padre de Ana tiene 5 hijas: Lala, Lele, Lili, Lolo y...",
+>>>>>>> 6317da66e515f40516c4877e14bd606659b16ae7
           opciones: ["Lulu", "Ana", "Susana", "Laura"],
           indiceRespuestaCorrecta: 1,
           tipoEdificio: 'gimnasio'),
@@ -646,7 +650,11 @@ class QuizData {
       Pregunta(
           id: 'g13',
           textoPregunta:
+<<<<<<< HEAD
               "Entras a una habitación oscura con un fósforo. Hay vela y leña. ¿Qué enciendes primero?",
+=======
+          "Entras a una habitación oscura con un fósforo. Hay vela y leña. ¿Qué enciendes primero?",
+>>>>>>> 6317da66e515f40516c4877e14bd606659b16ae7
           opciones: ["Vela", "Leña", "Fósforo", "Nada"],
           indiceRespuestaCorrecta: 2,
           tipoEdificio: 'gimnasio'),

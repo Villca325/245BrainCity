@@ -29,6 +29,7 @@ class _QuizViewState extends State<QuizView> {
       cityController.agregarPuntos(100);
     }
 
+    // Mostrar diálogo de respuesta
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -38,16 +39,17 @@ class _QuizViewState extends State<QuizView> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-
               quizController.siguientePregunta();
 
-              if (quizController.quizTerminado) {
-                Future.delayed(Duration.zero, () {
+              // Verificación de victoria
+              if (quizController.puntos >= 1000 && !quizController.yaGano) {
+                quizController.marcarComoGanado();
+                WidgetsBinding.instance.addPostFrameCallback((_) {
                   _mostrarFinQuiz(context, cityController);
                 });
-              } else {
-                setState(() {});
               }
+
+              setState(() {});
             },
             child: const Text("Continuar"),
           ),
@@ -57,16 +59,17 @@ class _QuizViewState extends State<QuizView> {
   }
 
   void _mostrarFinQuiz(BuildContext context, CityController cityController) {
-    if (quizController.puntos >= 1000) {
+    bool gano = quizController.puntos >= 1000;
 
-    }
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => AlertDialog(
-        title: const Text("Fin del Quiz"),
+        title: Text(gano ? "¡Felicidades, Ganaste!" : "Fin del Quiz"),
         content: Text(
-            "Tu puntuación en este edificio: ${quizController.puntos}\nPuntuación global: ${cityController.totalScore}"),
+            "Tu puntuación en este edificio: ${quizController.puntos}\n"
+                "Puntuación global: ${cityController.totalScore}"
+        ),
         actions: [
           TextButton(
             onPressed: () {
