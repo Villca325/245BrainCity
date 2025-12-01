@@ -76,7 +76,7 @@ class _ImagePaintedState extends State<ImagePainted> {
 
   @override
   Widget build(BuildContext context) {
-    final cityController = Provider.of<CityController>(context); // <-- Escuchar cambios
+    final cityController = Provider.of<CityController>(context);
 
     return LayoutBuilder(
       builder: (context, constraints) {

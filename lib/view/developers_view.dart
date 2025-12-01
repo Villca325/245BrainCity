@@ -1,4 +1,3 @@
-// Archivo: lib/pagina_desarrolladores.dart
 import 'package:flutter/material.dart';
 import 'widgets/boton_atras.dart';
 
@@ -18,8 +17,7 @@ class PaginaDesarrolladores extends StatelessWidget {
             scrollDirection: Axis.vertical,
             child: Column(
               children: [
-                const SizedBox(height: 80), // Espacio para la barra superior
-                // TÍTULO
+                const SizedBox(height: 80),
                 const Text(
                   "NUESTRO EQUIPO",
                   style: TextStyle(
@@ -29,7 +27,7 @@ class PaginaDesarrolladores extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(height: 30), // Separación después del título
+                const SizedBox(height: 30),
                 Image.asset(
                   'assets/images/manadaCORP.jpg',
                   width: 300,
@@ -44,11 +42,12 @@ class PaginaDesarrolladores extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 20),
+                // --- FILA 1 ---
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     tarjeta(
-                      nombre: "Elizeo Condori",
+                      nombre: "Eliseo Condori",
                       rol: "Programador",
                       rutaImagen: "",
                     ),
@@ -94,8 +93,8 @@ class PaginaDesarrolladores extends StatelessWidget {
                   ],
                 ),
 
-                // AQUÍ ESTABA EL ERROR: Cambiamos Spacer() por SizedBox
-                const SizedBox(height: 30), // Espacio grande antes del footer
+
+                const SizedBox(height: 30),
 
                 const Padding(
                   padding: EdgeInsets.only(bottom: 30.0),

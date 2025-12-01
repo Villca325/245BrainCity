@@ -3,9 +3,7 @@ import '../models/building_model.dart';
 import '../models/question_model.dart';
 
 class QuizData {
-  // =======================================================
   // 1. BANCO (Matemáticas, Cálculo e Informática)
-  // =======================================================
   static final Building banco = Building(
     id: 'banco',
     name: 'BANCO',
@@ -143,9 +141,7 @@ class QuizData {
     ],
   );
 
-  // =======================================================
   // 2. LABORATORIO (Ciencia, Física, Química)
-  // =======================================================
   static final Building laboratorio = Building(
     id: 'lab',
     name: 'LABORATORIO',
@@ -283,9 +279,7 @@ class QuizData {
     ],
   );
 
-  // =======================================================
   // 3. BIBLIOTECA (Cultura, Arte, Literatura)
-  // =======================================================
   static final Building biblioteca = Building(
     id: 'biblio',
     name: 'BIBLIOTECA',
@@ -378,7 +372,7 @@ class QuizData {
           textoPregunta: "Idioma más hablado:",
           opciones: ["Español", "Inglés", "Chino Mandarín", "Hindi"],
           indiceRespuestaCorrecta: 1,
-          tipoEdificio: 'biblioteca'), // Inglés (total speakers)
+          tipoEdificio: 'biblioteca'),
       Pregunta(
           id: 'bi15',
           textoPregunta: "Diosa griega sabiduría:",
@@ -418,13 +412,11 @@ class QuizData {
     ],
   );
 
-  // =======================================================
   // 4. MUSEO (Historia Universal y de Bolivia)
-  // =======================================================
   static final Building museo = Building(
     id: 'museo',
     name: 'MUSEO',
-    color: const Color(0xFFFFCA28), // Amarillo
+    color: const Color(0xFFFFCA28),
     icon: Icons.museum,
     questions: [
       // --- Lote 1 ---
@@ -558,9 +550,7 @@ class QuizData {
     ],
   );
 
-  // =======================================================
   // 5. GIMNASIO (Lógica, Acertijos, Series)
-  // =======================================================
   static final Building gimnasio = Building(
     id: 'gym',
     name: 'GIMNASIO',
@@ -679,7 +669,7 @@ class QuizData {
           textoPregunta: "Serie: L, M, M, J, V...",
           opciones: ["S", "D", "L", "M"],
           indiceRespuestaCorrecta: 0,
-          tipoEdificio: 'gimnasio'), // Días semana
+          tipoEdificio: 'gimnasio'),
       Pregunta(
           id: 'g19',
           textoPregunta: "Va delante de ti pero no lo ves:",
@@ -691,7 +681,7 @@ class QuizData {
           textoPregunta: "París empieza con P y termina con...",
           opciones: ["S", "T", "P", "E"],
           indiceRespuestaCorrecta: 1,
-          tipoEdificio: 'gimnasio'), // Termina con T
+          tipoEdificio: 'gimnasio'),
     ],
   );
 }

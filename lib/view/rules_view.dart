@@ -1,4 +1,3 @@
-// Archivo: lib/pagina_reglas.dart
 import 'package:flutter/material.dart';
 import 'widgets/boton_atras.dart';
 
@@ -10,23 +9,22 @@ class PaginaReglas extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // 1. FONDO (Mismo violeta oscuro que Desarrolladores)
+          // 1. FONDO
           Container(color: const Color(0xFF1A1025)),
 
           // 2. CONTENIDO CON SCROLL
           SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(height: 80), // Espacio superior
+                const SizedBox(height: 80),
                 // Imagen
                 Image.asset(
                   'assets/images/reglas.png',
                   width: 180,
                   height:
-                      180, // Le di altura fija para controlar mejor el espacio
+                      180,
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) {
-                    // Si no tienes la imagen aún, muestra este icono
                     return const Icon(
                       Icons.menu_book_rounded,
                       size: 100,
@@ -57,18 +55,18 @@ class PaginaReglas extends StatelessWidget {
 
                 const SizedBox(height: 25),
 
-                // --- CAJA DE REGLAS ---
+                //  CAJA DE REGLAS
                 Container(
                   margin: const EdgeInsets.symmetric(
                     horizontal: 20,
-                  ), // Margen a los lados
+                  ),
                   width: double.infinity,
                   constraints: const BoxConstraints(
                     maxWidth: 600,
-                  ), // Evita que se estire demasiado en tablets
+                  ),
                   padding: const EdgeInsets.all(25),
                   decoration: BoxDecoration(
-                    color: Colors.black26, // Fondo semitransparente
+                    color: Colors.black26,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: Colors.white10),
                   ),
@@ -117,26 +115,25 @@ class PaginaReglas extends StatelessWidget {
 
                 const SizedBox(height: 40),
 
-                // Copyright
                 const Text(
                   "Todos los derechos reservados ManadaCORP 2025",
                   style: TextStyle(color: Colors.white38, fontSize: 12),
                   textAlign: TextAlign.center,
                 ),
 
-                const SizedBox(height: 30), // Espacio final
+                const SizedBox(height: 30),
               ],
             ),
           ),
 
-          // 3. BOTÓN ATRÁS (Siempre al final para estar arriba)
+          // 3. BOTÓN ATRÁS
           const BotonAtras(colorIcono: Colors.white),
         ],
       ),
     );
   }
 
-  // --- MÉTODOS AUXILIARES (Fuera del build) ---
+  //  MÉTODOS AUXILIARES (Fuera del build)
 
   Widget _divider() {
     return const Padding(
@@ -149,7 +146,6 @@ class PaginaReglas extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Icono con fondo suave
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
@@ -161,7 +157,6 @@ class PaginaReglas extends StatelessWidget {
 
         const SizedBox(width: 15),
 
-        // Textos
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,8 +174,8 @@ class PaginaReglas extends StatelessWidget {
                 descripcion,
                 style: const TextStyle(
                   color: Colors.white70,
-                  fontSize: 13, // Letra un poco más pequeña para leer mejor
-                  height: 1.4, // Interlineado cómodo
+                  fontSize: 13,
+                  height: 1.4,
                 ),
               ),
             ],
