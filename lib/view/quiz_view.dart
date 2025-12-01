@@ -33,7 +33,7 @@ class _QuizViewState extends State<QuizView> {
       context: context,
       builder: (_) => AlertDialog(
         title: Text(correcta ? "¡Correcto!" : "Incorrecto"),
-        content: Text(correcta ? "¡Ganaste 10 puntos!" : "Sigue intentando."),
+        content: Text(correcta ? "¡Ganaste 100 puntos!" : "Sigue intentando."),
         actions: [
           TextButton(
             onPressed: () {
